@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NOIRÉ — Luxury Footwear</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========================================
+       ROOT VARIABLES
+    ======================================== */
+    :root{
+      --bg:#070707;
+      --bg2:#111111;
+      --card:#141414;
+      --text:#f3f1ec;
+      --muted:#9e9e9e;
+      --gold:#C9A84C;
+      --border:rgba(255,255,255,0.08);
+      --glass:rgba(255,255,255,0.06);
+      --radius:22px;
+
+      --serif:'Playfair Display', serif;
+      --sans:'Inter', sans-serif;
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--sans);
+      overflow-x:hidden;
+      cursor:none;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    button,input{
+      font-family:inherit;
+      border:none;
+      outline:none;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    section{
+      padding:100px 6%;
+      position:relative;
+    }
+
+    .section-title{
+      font-size:clamp(2.5rem,5vw,5rem);
+      font-family:var(--serif);
+      margin-bottom:20px;
+      line-height:1;
+    }
+
+    .muted{
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    /* ========================================
+       CUSTOM CURSOR
+    ======================================== */
+    .cursor{
+      width:18px;
+      height:18px;
+      border:1px solid var(--gold);
+      border-radius:50%;
+      position:fixed;
+      top:0;
+      left:0;
+      pointer-events:none;
+      z-index:9999;
+      transform:translate(-50%,-50%);
+      transition:width .25s,height .25s,background .25s,transform .1s;
+      backdrop-filter:invert(1);
+    }
+
+    .cursor.active{
+      width:48px;
+      height:48px;
+      background:rgba(201,168,76,.15);
+    }
+
+    /* ========================================
+       LOADER
+    ======================================== */
+    .loader{
+      position:fixed;
+      inset:0;
+      background:#000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:10000;
+      flex-direction:column;
+      transition:opacity .8s ease, visibility .8s ease;
+    }
+
+    .loader.hide{
+      opacity:0;
+      visibility:hidden;
+    }
+
+    .loader h1{
+      font-family:var(--serif);
+      font-size:4rem;
+      letter-spacing:8px;
+      color:var(--gold);
+      animation:reveal 2s ease forwards;
+    }
+
+    @keyframes reveal{
+      0%{
+        opacity:0;
+        letter-spacing:30px;
+      }
+      100%{
+        opacity:1;
+        letter-spacing:8px;
+      }
+    }
+
+    /* ========================================
+       NAVBAR
+    ======================================== */
+    nav{
+      width:92%;
+      position:fixed;
+      top:20px;
+      left:50%;
+      transform:translateX(-50%);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:18px 28px;
+      z-index:999;
+      border-radius:999px;
+      transition:.4s ease;
+    }
+
+    nav.scrolled{
+      background:rgba(10,10,10,0.7);
+      backdrop-filter:blur(14px);
+      border:1px solid var(--border);
+    }
+
+    .logo{
+      font-family:var(--serif);
+      font-size:1.7rem;
+      letter-spacing:2px;
+    }
+
+    .nav-links{
+      display:flex;
+      gap:34px;
+      list-style:none;
+    }
+
+    .nav-links a{
+      color:#ddd;
+      transition:.3s;
+      font-size:.95rem;
+    }
+
+    .nav-links a:hover{
+      color:var(--gold);
+    }
+
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+
+    .btn{
+      background:var(--gold);
+      color:#000;
+      padding:13px 22px;
+      border-radius:999px;
+      font-weight:600;
+      cursor:pointer;
+      transition:.3s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .btn:hover{
+      transform:translateY(-3px) scale(1.03);
+      box-shadow:0 10px 35px rgba(201,168,76,.25);
+    }
+
+    .btn:active{
+      transform:scale(.95);
+    }
+
+    .cart-btn{
+      position:relative;
+      cursor:pointer;
+      font-size:1.3rem;
+    }
+
+    .cart-count{
+      position:absolute;
+      top:-8px;
+      right:-10px;
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      background:var(--gold);
+      color:#000;
+      font-size:.75rem;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+    }
+
+    .hamburger{
+      display:none;
+      flex-direction:column;
+      gap:5px;
+      cursor:pointer;
+    }
+
+    .hamburger span{
+      width:25px;
+      height:2px;
+      background:white;
+    }
+
+    /* ========================================
+       MOBILE MENU
+    ======================================== */
+    .mobile-menu{
+      position:fixed;
+      inset:0;
+      background:#050505;
+      z-index:998;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:35px;
+      transform:translateX(100%);
+      transition:.5s ease;
+    }
+
+    .mobile-menu.active{
+      transform:translateX(0);
+    }
+
+    .mobile-menu a{
+      font-size:2rem;
+      font-family:var(--serif);
+    }
+
+    /* ========================================
+       HERO
+    ======================================== */
+    .hero{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .grain{
+      position:absolute;
+      inset:0;
+      opacity:.08;
+      background-image:url("https://www.transparenttextures.com/patterns/asfalt-dark.png");
+      pointer-events:none;
+    }
+
+    .hero-content{
+      max-width:620px;
+      z-index:2;
+    }
+
+    .hero h1{
+      font-size:clamp(4rem,10vw,8rem);
+      font-family:var(--serif);
+      line-height:.9;
+      margin-bottom:28px;
+    }
+
+    .hero p{
+      color:var(--muted);
+      max-width:500px;
+      line-height:1.8;
+      margin-bottom:34px;
+    }
+
+    .hero-buttons{
+      display:flex;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+
+    .ghost-btn{
+      background:transparent;
+      border:1px solid var(--border);
+      color:white;
+    }
+
+    .hero-shoe{
+      width:45%;
+      min-width:340px;
+      position:relative;
+      perspective:1000px;
+      z-index:2;
+    }
+
+    .shoe-wrap{
+      transition:transform .2s ease;
+    }
+
+    .shoe{
+      width:100%;
+      filter:drop-shadow(0 40px 80px rgba(0,0,0,.8));
+    }
+
+    /* ========================================
+       MARQUEE
+    ======================================== */
+    .marquee{
+      width:100%;
+      overflow:hidden;
+      white-space:nowrap;
+      border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+      padding:18px 0;
+      background:#000;
+    }
+
+    .marquee-content{
+      display:inline-block;
+      animation:marquee 20s linear infinite;
+      color:var(--gold);
+      font-weight:600;
+      letter-spacing:2px;
+      font-size:1rem;
+    }
+
+    @keyframes marquee{
+      from{transform:translateX(0)}
+      to{transform:translateX(-50%)}
+    }
+
+    /* ========================================
+       COLLECTION GRID
+    ======================================== */
+    .collection-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      grid-auto-rows:320px;
+      gap:24px;
+      margin-top:50px;
+    }
+
+    .shoe-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      overflow:hidden;
+      position:relative;
+      transition:.4s ease;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      padding:24px;
+    }
+
+    .shoe-card:hover{
+      transform:translateY(-10px);
+      border-color:rgba(201,168,76,.6);
+    }
+
+    .shoe-card img{
+      width:100%;
+      height:180px;
+      object-fit:contain;
+    }
+
+    .shoe-card.featured{
+      grid-column:span 2;
+      grid-row:span 2;
+    }
+
+    .shoe-info{
+      margin-top:20px;
+    }
+
+    .shoe-info h3{
+      font-family:var(--serif);
+      margin-bottom:8px;
+    }
+
+    .price{
+      color:var(--gold);
+      font-weight:600;
+    }
+
+    .add-cart{
+      margin-top:18px;
+      width:100%;
+      padding:12px;
+      border-radius:999px;
+      background:var(--gold);
+      color:black;
+      font-weight:700;
+      opacity:0;
+      transform:translateY(15px);
+      transition:.35s;
+      cursor:pointer;
+    }
+
+    .shoe-card:hover .add-cart{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    /* ========================================
+       STORY SECTION
+    ======================================== */
+    .story{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:60px;
+      align-items:center;
+    }
+
+    .story-left h2{
+      font-size:7rem;
+      color:var(--gold);
+      font-family:var(--serif);
+      margin-bottom:20px;
+    }
+
+    .reveal-line{
+      overflow:hidden;
+    }
+
+    .reveal-line span{
+      display:block;
+      transform:translateY(100%);
+      transition:1s ease;
+    }
+
+    .reveal-line.show span{
+      transform:translateY(0);
+    }
+
+    .story-image{
+      transform:rotate(-5deg);
+      border:1px solid var(--border);
+      border-radius:30px;
+      overflow:hidden;
+      box-shadow:0 30px 80px rgba(0,0,0,.5);
+    }
+
+    /* ========================================
+       BESTSELLERS
+    ======================================== */
+    .horizontal-wrap{
+      overflow:hidden;
+      margin-top:50px;
+      cursor:grab;
+    }
+
+    .horizontal-scroll{
+      display:flex;
+      gap:24px;
+      transition:.2s;
+    }
+
+    .best-card{
+      min-width:300px;
+      background:var(--card);
+      border-radius:28px;
+      padding:24px;
+      border:1px solid var(--border);
+    }
+
+    .best-card img{
+      height:220px;
+      object-fit:contain;
+    }
+
+    .dots{
+      margin-top:30px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:#444;
+    }
+
+    .dot.active{
+      background:var(--gold);
+    }
+
+    /* ========================================
+       MATERIALS
+    ======================================== */
+    .materials-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:24px;
+      margin-top:50px;
+    }
+
+    .material-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:28px;
+      padding:40px;
+      transition:.4s ease;
+      min-height:280px;
+    }
+
+    .material-card:hover{
+      transform:scale(1.04);
+      border-color:var(--gold);
+    }
+
+    .material-card .icon{
+      font-size:3rem;
+      margin-bottom:20px;
+      color:var(--gold);
+    }
+
+    .material-card h3{
+      font-family:var(--serif);
+      margin-bottom:14px;
+      font-size:1.8rem;
+    }
+
+    /* ========================================
+       TESTIMONIALS
+    ======================================== */
+    .testimonials{
+      text-align:center;
+    }
+
+    .quote{
+      max-width:850px;
+      margin:auto;
+      min-height:240px;
+      position:relative;
+    }
+
+    .quote-mark{
+      font-size:7rem;
+      color:var(--gold);
+      opacity:.25;
+      line-height:1;
+    }
+
+    .testimonial{
+      position:absolute;
+      inset:0;
+      opacity:0;
+      transition:opacity 1s ease;
+    }
+
+    .testimonial.active{
+      opacity:1;
+    }
+
+    .testimonial p{
+      font-size:2rem;
+      line-height:1.5;
+      font-family:var(--serif);
+      margin-bottom:25px;
+    }
+
+    .stars{
+      color:var(--gold);
+      margin-bottom:12px;
+    }
+
+    /* ========================================
+       NEWSLETTER
+    ======================================== */
+    .newsletter{
+      background:#0d0d0d;
+      border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+      text-align:center;
+    }
+
+    .newsletter-form{
+      margin-top:30px;
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .newsletter input{
+      width:350px;
+      max-width:100%;
+      padding:18px 20px;
+      border-radius:999px;
+      background:#151515;
+      border:1px solid var(--border);
+      color:white;
+    }
+
+    #newsletterMessage{
+      margin-top:20px;
+      color:var(--gold);
+    }
+
+    /* ========================================
+       FOOTER
+    ======================================== */
+    footer{
+      padding:80px 6% 20px;
+    }
+
+    .footer-grid{
+      display:grid;
+      grid-template-columns:2fr 1fr 1fr 1fr;
+      gap:40px;
+      margin-bottom:50px;
+    }
+
+    .footer-grid h4{
+      margin-bottom:20px;
+      font-size:1rem;
+      color:var(--gold);
+    }
+
+    .footer-grid ul{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .footer-grid li{
+      color:var(--muted);
+    }
+
+    .socials{
+      display:flex;
+      gap:16px;
+      font-size:1.4rem;
+    }
+
+    .footer-bottom{
+      border-top:1px solid var(--border);
+      padding-top:20px;
+      text-align:center;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    /* ========================================
+       CART SIDEBAR
+    ======================================== */
+    .cart-sidebar{
+      position:fixed;
+      top:0;
+      right:-420px;
+      width:400px;
+      max-width:100%;
+      height:100vh;
+      background:#0d0d0d;
+      border-left:1px solid var(--border);
+      z-index:9999;
+      transition:.5s ease;
+      padding:30px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .cart-sidebar.active{
+      right:0;
+    }
+
+    .cart-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:30px;
+    }
+
+    .cart-items{
+      flex:1;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .cart-item{
+      display:flex;
+      gap:14px;
+      border-bottom:1px solid var(--border);
+      padding-bottom:16px;
+    }
+
+    .cart-item img{
+      width:90px;
+      height:70px;
+      object-fit:contain;
+      background:#111;
+      border-radius:12px;
+    }
+
+    .qty{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .qty button{
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:#1d1d1d;
+      color:white;
+      cursor:pointer;
+    }
+
+    .checkout{
+      margin-top:20px;
+    }
+
+    /* ========================================
+       VIDEO MODAL
+    ======================================== */
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.85);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:10000;
+      opacity:0;
+      pointer-events:none;
+      transition:.4s;
+    }
+
+    .modal.active{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .modal-content{
+      width:80%;
+      max-width:900px;
+      aspect-ratio:16/9;
+      position:relative;
+    }
+
+    .modal iframe{
+      width:100%;
+      height:100%;
+      border:none;
+      border-radius:20px;
+    }
+
+    .close-modal{
+      position:absolute;
+      top:-50px;
+      right:0;
+      font-size:2rem;
+      cursor:pointer;
+    }
+
+    /* ========================================
+       SCROLL ANIMATION
+    ======================================== */
+    .hidden{
+      opacity:0;
+      transform:translateY(60px);
+      transition:1s ease;
+    }
+
+    .show{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    /* ========================================
+       RESPONSIVE
+    ======================================== */
+    @media(max-width:980px){
+
+      .nav-links,
+      .nav-right .btn{
+        display:none;
+      }
+
+      .hamburger{
+        display:flex;
+      }
+
+      .hero{
+        flex-direction:column;
+        justify-content:center;
+        gap:60px;
+        text-align:center;
+      }
+
+      .hero-content{
+        margin-top:120px;
+      }
+
+      .hero-buttons{
+        justify-content:center;
+      }
+
+      .collection-grid{
+        grid-template-columns:1fr;
+      }
+
+      .shoe-card.featured{
+        grid-column:auto;
+        grid-row:auto;
+      }
+
+      .story{
+        grid-template-columns:1fr;
+      }
+
+      .materials-grid{
+        grid-template-columns:1fr;
+      }
+
+      .footer-grid{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .testimonial p{
+        font-size:1.4rem;
+      }
+    }
+
+    @media(max-width:640px){
+
+      section{
+        padding:80px 6%;
+      }
+
+      .hero h1{
+        font-size:3.8rem;
+      }
+
+      .footer-grid{
+        grid-template-columns:1fr;
+      }
+
+      .cart-sidebar{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ========================================
+       CUSTOM CURSOR
+  ======================================== -->
+  <div class="cursor"></div>
+
+  <!-- ========================================
+       LOADER
+  ======================================== -->
+  <div class="loader">
+    <h1>NOIRÉ</h1>
+  </div>
+
+  <!-- ========================================
+       NAVBAR
+  ======================================== -->
+  <nav>
+    <div class="logo">NOIRÉ</div>
+
+    <ul class="nav-links">
+      <li><a href="#collection">Collection</a></li>
+      <li><a href="#story">Story</a></li>
+      <li><a href="#materials">Materials</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+    <div class="nav-right">
+      <div class="cart-btn" id="cartToggle">
+        👜
+        <div class="cart-count" id="cartCount">0</div>
+      </div>
+
+      <button class="btn">Shop Now</button>
+
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#collection">Collection</a>
+    <a href="#story">Story</a>
+    <a href="#materials">Materials</a>
+    <a href="#contact">Contact</a>
+  </div>
+
+  <!-- ========================================
+       HERO
+  ======================================== -->
+  <section class="hero">
+    <div class="grain"></div>
+
+    <div class="hero-content hidden">
+      <h1>Crafted for<br>Those Who Know</h1>
+
+      <p>
+        Precision-built luxury footwear designed with Italian silhouettes,
+        handcrafted detailing, and a quiet confidence that speaks before you do.
+      </p>
+
+      <div class="hero-buttons">
+        <button class="btn">Explore Collection</button>
+        <button class="btn ghost-btn" id="watchFilm">Watch Film</button>
+      </div>
+    </div>
+
+    <div class="hero-shoe hidden">
+      <div class="shoe-wrap" id="shoeWrap">
+        <img class="shoe" src="https://pngimg.com/d/running_shoes_PNG5816.png" alt="Luxury Shoe">
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       MARQUEE
+  ======================================== -->
+  <div class="marquee">
+    <div class="marquee-content">
+      Handcrafted · Premium Leather · Limited Edition · Free Worldwide Shipping ·
+      Handcrafted · Premium Leather · Limited Edition · Free Worldwide Shipping ·
+      Handcrafted · Premium Leather · Limited Edition · Free Worldwide Shipping ·
+    </div>
+  </div>
+
+  <!-- ========================================
+       COLLECTION
+  ======================================== -->
+  <section id="collection">
+    <h2 class="section-title hidden">Featured Collection</h2>
+
+    <div class="collection-grid">
+
+      <div class="shoe-card featured hidden">
+        <img src="https://pngimg.com/d/running_shoes_PNG5823.png">
+        <div class="shoe-info">
+          <h3>Obsidian Runner</h3>
+          <div class="price">$480</div>
+          <button class="add-cart"
+            data-name="Obsidian Runner"
+            data-price="480"
+            data-image="https://pngimg.com/d/running_shoes_PNG5823.png">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+
+      <div class="shoe-card hidden">
+        <img src="https://pngimg.com/d/running_shoes_PNG5815.png">
+        <div class="shoe-info">
+          <h3>Velour Eclipse</h3>
+          <div class="price">$320</div>
+          <button class="add-cart"
+            data-name="Velour Eclipse"
+            data-price="320"
+            data-image="https://pngimg.com/d/running_shoes_PNG5815.png">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+
+      <div class="shoe-card hidden">
+        <img src="https://pngimg.com/d/running_shoes_PNG5811.png">
+        <div class="shoe-info">
+          <h3>Monarch Gold</h3>
+          <div class="price">$520</div>
+          <button class="add-cart"
+            data-name="Monarch Gold"
+            data-price="520"
+            data-image="https://pngimg.com/d/running_shoes_PNG5811.png">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+
+      <div class="shoe-card hidden">
+        <img src="https://pngimg.com/d/running_shoes_PNG5807.png">
+        <div class="shoe-info">
+          <h3>Carbon Atelier</h3>
+          <div class="price">$450</div>
+          <button class="add-cart"
+            data-name="Carbon Atelier"
+            data-price="450"
+            data-image="https://pngimg.com/d/running_shoes_PNG5807.png">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+
+      <div class="shoe-card hidden">
+        <img src="https://pngimg.com/d/running_shoes_PNG5817.png">
+        <div class="shoe-info">
+          <h3>Noir Velocity</h3>
+          <div class="price">$390</div>
+          <button class="add-cart"
+            data-name="Noir Velocity"
+            data-price="390"
+            data-image="https://pngimg.com/d/running_shoes_PNG5817.png">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================
+       STORY
+  ======================================== -->
+  <section id="story">
+    <div class="story">
+
+      <div class="story-left hidden">
+        <h2>Est. 2024</h2>
+
+        <div class="reveal-line">
+          <span>
+            NOIRÉ was built for individuals who understand restraint,
+            craftsmanship, and timeless elegance.
+          </span>
+        </div>
+
+        <br>
+
+        <div class="reveal-line">
+          <span>
+            Every silhouette is engineered with obsessive detail — blending
+            heritage tailoring with modern movement.
+          </span>
+        </div>
+      </div>
+
+      <div class="story-image hidden">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop">
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================
+       BESTSELLERS
+  ======================================== -->
+  <section>
+    <h2 class="section-title hidden">Bestsellers</h2>
+
+    <div class="horizontal-wrap" id="scrollWrap">
+      <div class="horizontal-scroll" id="horizontalScroll">
+
+        <div class="best-card">
+          <img src="https://pngimg.com/d/running_shoes_PNG5816.png">
+          <h3>Shadow Luxe</h3>
+          <div class="price">$420</div>
+        </div>
+
+        <div class="best-card">
+          <img src="https://pngimg.com/d/running_shoes_PNG5823.png">
+          <h3>Velvet Sprint</h3>
+          <div class="price">$490</div>
+        </div>
+
+        <div class="best-card">
+          <img src="https://pngimg.com/d/running_shoes_PNG5817.png">
+          <h3>Goldline Runner</h3>
+          <div class="price">$530</div>
+        </div>
+
+        <div class="best-card">
+          <img src="https://pngimg.com/d/running_shoes_PNG5807.png">
+          <h3>Atelier One</h3>
+          <div class="price">$380</div>
+        </div>
+
+        <div class="best-card">
+          <img src="https://pngimg.com/d/running_shoes_PNG5811.png">
+          <h3>Night Monarch</h3>
+          <div class="price">$610</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       MATERIALS
+  ======================================== -->
+  <section id="materials">
+    <h2 class="section-title hidden">Exceptional Materials</h2>
+
+    <div class="materials-grid">
+
+      <div class="material-card hidden">
+        <div class="icon">◈</div>
+        <h3>Full-Grain Leather</h3>
+        <p class="muted">
+          Naturally textured premium leather selected for durability,
+          richness, and timeless patina.
+        </p>
+      </div>
+
+      <div class="material-card hidden">
+        <div class="icon">✦</div>
+        <h3>Suede</h3>
+        <p class="muted">
+          Soft-touch suede finished with a refined matte texture and tailored comfort.
+        </p>
+      </div>
+
+      <div class="material-card hidden">
+        <div class="icon">⬢</div>
+        <h3>Exotic Skin</h3>
+        <p class="muted">
+          Rarely sourced exotic finishes delivering bold sophistication with restraint.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================
+       TESTIMONIALS
+  ======================================== -->
+  <section class="testimonials">
+    <div class="quote">
+      <div class="quote-mark">“</div>
+
+      <div class="testimonial active">
+        <p>
+          The most refined footwear experience I have ever owned.
+          Quiet luxury done perfectly.
+        </p>
+        <div class="stars">★★★★★</div>
+        <h4>— Adrian Cole</h4>
+      </div>
+
+      <div class="testimonial">
+        <p>
+          Every detail feels intentional. The craftsmanship is unreal.
+        </p>
+        <div class="stars">★★★★★</div>
+        <h4>— Michael Laurent</h4>
+      </div>
+
+      <div class="testimonial">
+        <p>
+          Understated elegance with modern performance. Exactly what luxury should feel like.
+        </p>
+        <div class="stars">★★★★★</div>
+        <h4>— Sofia Bennett</h4>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================
+       NEWSLETTER
+  ======================================== -->
+  <section class="newsletter" id="contact">
+    <h2 class="section-title hidden">Join The Inner Circle</h2>
+
+    <p class="muted">
+      Receive early access to limited releases and private editorial drops.
+    </p>
+
+    <form class="newsletter-form" id="newsletterForm">
+      <input type="email" id="emailInput" placeholder="Enter your email" required>
+      <button class="btn" type="submit">Submit</button>
+    </form>
+
+    <div id="newsletterMessage"></div>
+  </section>
+
+  <!-- ========================================
+       FOOTER
+  ======================================== -->
+  <footer>
+
+    <div class="footer-grid">
+
+      <div>
+        <div class="logo">NOIRÉ</div>
+        <br>
+        <p class="muted">
+          Luxury footwear designed with precision, restraint, and timeless confidence.
+        </p>
+      </div>
+
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li>New Arrivals</li>
+          <li>Bestsellers</li>
+          <li>Limited Edition</li>
+          <li>Accessories</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li>About</li>
+          <li>Journal</li>
+          <li>Careers</li>
+          <li>Contact</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Social</h4>
+        <div class="socials">
+          <span>◎</span>
+          <span>◉</span>
+          <span>◈</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      © 2026 NOIRÉ. All rights reserved.
+    </div>
+
+  </footer>
+
+  <!-- ========================================
+       CART SIDEBAR
+  ======================================== -->
+  <div class="cart-sidebar" id="cartSidebar">
+
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <button class="btn" id="closeCart">Close</button>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <div class="checkout">
+      <h3>Total: $<span id="cartTotal">0</span></h3>
+      <br>
+      <button class="btn" style="width:100%">Checkout</button>
+    </div>
+
+  </div>
+
+  <!-- ========================================
+       VIDEO MODAL
+  ======================================== -->
+  <div class="modal" id="videoModal">
+    <div class="modal-content">
+      <div class="close-modal" id="closeModal">✕</div>
+
+      <iframe
+        src="https://www.youtube.com/embed/2Vv-BfVoq4g"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <!-- ========================================
+       SCRIPT
+  ======================================== -->
+  <script>
+
+    /* ========================================
+       LOADER
+    ======================================== */
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        document.querySelector(".loader").classList.add("hide");
+      }, 2000);
+    });
+
+    /* ========================================
+       STICKY NAV
+    ======================================== */
+    const nav = document.querySelector("nav");
+
+    window.addEventListener("scroll", () => {
+      nav.classList.toggle("scrolled", window.scrollY > 40);
+    });
+
+    /* ========================================
+       MOBILE MENU
+    ======================================== */
+    const hamburger = document.getElementById("hamburger");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    hamburger.addEventListener("click", () => {
+      mobileMenu.classList.toggle("active");
+    });
+
+    document.querySelectorAll(".mobile-menu a").forEach(link => {
+      link.addEventListener("click", () => {
+        mobileMenu.classList.remove("active");
+      });
+    });
+
+    /* ========================================
+       CUSTOM CURSOR
+    ======================================== */
+    const cursor = document.querySelector(".cursor");
+
+    window.addEventListener("mousemove", e => {
+      cursor.style.top = e.clientY + "px";
+      cursor.style.left = e.clientX + "px";
+    });
+
+    document.querySelectorAll("button, a, .shoe-card, .best-card").forEach(el => {
+      el.addEventListener("mouseenter", () => {
+        cursor.classList.add("active");
+      });
+
+      el.addEventListener("mouseleave", () => {
+        cursor.classList.remove("active");
+      });
+    });
+
+    /* ========================================
+       HERO PARALLAX
+    ======================================== */
+    const shoeWrap = document.getElementById("shoeWrap");
+
+    document.addEventListener("mousemove", (e) => {
+
+      let x = (window.innerWidth / 2 - e.pageX) / 35;
+      let y = (window.innerHeight / 2 - e.pageY) / 35;
+
+      shoeWrap.style.transform =
+        `rotateY(${x}deg) rotateX(${-y}deg) translateZ(20px)`;
+    });
+
+    /* ========================================
+       SCROLL REVEAL
+    ======================================== */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add("show");
+        }
+      });
+    }, {threshold:.15});
+
+    document.querySelectorAll(".hidden").forEach(el => {
+      observer.observe(el);
+    });
+
+    /* ========================================
+       TEXT LINE REVEAL
+    ======================================== */
+    const lineObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add("show");
+        }
+      });
+    });
+
+    document.querySelectorAll(".reveal-line").forEach(el=>{
+      lineObserver.observe(el);
+    });
+
+    /* ========================================
+       VIDEO MODAL
+    ======================================== */
+    const watchFilm = document.getElementById("watchFilm");
+    const videoModal = document.getElementById("videoModal");
+    const closeModal = document.getElementById("closeModal");
+
+    watchFilm.addEventListener("click", () => {
+      videoModal.classList.add("active");
+    });
+
+    closeModal.addEventListener("click", () => {
+      videoModal.classList.remove("active");
+    });
+
+    videoModal.addEventListener("click", e => {
+      if(e.target === videoModal){
+        videoModal.classList.remove("active");
+      }
+    });
+
+    /* ========================================
+       CART FUNCTIONALITY
+    ======================================== */
+    let cart = [];
+
+    const cartItems = document.getElementById("cartItems");
+    const cartCount = document.getElementById("cartCount");
+    const cartTotal = document.getElementById("cartTotal");
+
+    function updateCart(){
+
+      cartItems.innerHTML = "";
+
+      let total = 0;
+      let count = 0;
+
+      cart.forEach((item,index)=>{
+
+        total += item.price * item.qty;
+        count += item.qty;
+
+        cartItems.innerHTML += `
+          <div class="cart-item">
+            <img src="${item.image}">
+            <div>
+              <h4>${item.name}</h4>
+              <p>$${item.price}</p>
+
+              <div class="qty">
+                <button onclick="changeQty(${index}, -1)">-</button>
+                <span>${item.qty}</span>
+                <button onclick="changeQty(${index}, 1)">+</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      cartTotal.textContent = total;
+      cartCount.textContent = count;
+    }
+
+    function changeQty(index, amount){
+
+      cart[index].qty += amount;
+
+      if(cart[index].qty <= 0){
+        cart.splice(index,1);
+      }
+
+      updateCart();
+    }
+
+    document.querySelectorAll(".add-cart").forEach(btn=>{
+
+      btn.addEventListener("click", ()=>{
+
+        const name = btn.dataset.name;
+        const price = Number(btn.dataset.price);
+        const image = btn.dataset.image;
+
+        const existing = cart.find(item => item.name === name);
+
+        if(existing){
+          existing.qty++;
+        } else {
+          cart.push({
+            name,
+            price,
+            image,
+            qty:1
+          });
+        }
+
+        updateCart();
+
+        cartSidebar.classList.add("active");
+      });
+    });
+
+    /* ========================================
+       CART SIDEBAR
+    ======================================== */
+    const cartSidebar = document.getElementById("cartSidebar");
+    const cartToggle = document.getElementById("cartToggle");
+    const closeCart = document.getElementById("closeCart");
+
+    cartToggle.addEventListener("click", ()=>{
+      cartSidebar.classList.add("active");
+    });
+
+    closeCart.addEventListener("click", ()=>{
+      cartSidebar.classList.remove("active");
+    });
+
+    /* ========================================
+       TESTIMONIAL SLIDER
+    ======================================== */
+    const testimonials = document.querySelectorAll(".testimonial");
+    let testimonialIndex = 0;
+
+    setInterval(()=>{
+
+      testimonials[testimonialIndex].classList.remove("active");
+
+      testimonialIndex =
+        (testimonialIndex + 1) % testimonials.length;
+
+      testimonials[testimonialIndex].classList.add("active");
+
+    },4000);
+
+    /* ========================================
+       NEWSLETTER
+    ======================================== */
+    const newsletterForm = document.getElementById("newsletterForm");
+    const emailInput = document.getElementById("emailInput");
+    const newsletterMessage = document.getElementById("newsletterMessage");
+
+    newsletterForm.addEventListener("submit", e => {
+
+      e.preventDefault();
+
+      emailInput.value = "";
+
+      newsletterMessage.textContent =
+        "Welcome to the inner circle.";
+    });
+
+    /* ========================================
+       HORIZONTAL DRAG SCROLL
+    ======================================== */
+    const slider = document.getElementById("horizontalScroll");
+    const wrap = document.getElementById("scrollWrap");
+
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    wrap.addEventListener("mousedown", e => {
+      isDown = true;
+      startX = e.pageX - wrap.offsetLeft;
+      scrollLeft = wrap.scrollLeft;
+    });
+
+    wrap.addEventListener("mouseleave", ()=>{
+      isDown = false;
+    });
+
+    wrap.addEventListener("mouseup", ()=>{
+      isDown = false;
+    });
+
+    wrap.addEventListener("mousemove", e => {
+
+      if(!isDown) return;
+
+      e.preventDefault();
+
+      const x = e.pageX - wrap.offsetLeft;
+      const walk = (x - startX) * 2;
+
+      wrap.scrollLeft = scrollLeft - walk;
+    });
+
+    /* TOUCH */
+    wrap.addEventListener("touchstart", e => {
+      startX = e.touches[0].pageX;
+      scrollLeft = wrap.scrollLeft;
+    });
+
+    wrap.addEventListener("touchmove", e => {
+      const x = e.touches[0].pageX;
+      const walk = (x - startX) * 1.5;
+
+      wrap.scrollLeft = scrollLeft - walk;
+    });
+
+    /* ========================================
+       DOTS UPDATE
+    ======================================== */
+    const dots = document.querySelectorAll(".dot");
+
+    wrap.addEventListener("scroll", ()=>{
+
+      const maxScroll = wrap.scrollWidth - wrap.clientWidth;
+      const percentage = wrap.scrollLeft / maxScroll;
+
+      const activeIndex =
+        Math.round(percentage * (dots.length - 1));
+
+      dots.forEach(dot=>dot.classList.remove("active"));
+
+      if(dots[activeIndex]){
+        dots[activeIndex].classList.add("active");
+      }
+    });
+
+  </script>
+
+</body>
+</html>
